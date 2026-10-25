@@ -1,24 +1,28 @@
 # forged
 
-![HACKER_LM — forged TUI on the landing screen](docs/hacker_lm-landing.png)
+![forged TUI on the landing screen](docs/hacker_lm-landing.png)
 
-Local, uncensored cybersecurity copilot for authorized red-team work. Runs entirely offline on a thin-and-light Intel laptop. v2 — currently rebuilding.
+A local, private, retrieval-grounded security assistant. Runs entirely offline on a thin-and-light Intel laptop, for authorized lab work, CTF practice, and studying public security knowledge. v2 — currently rebuilding.
 
 ## Status
 
 Active build, not ready for use. Tracking the build day-by-day in [BUILD_JOURNAL.md](./BUILD_JOURNAL.md).
 
-The v1 product (a Textual TUI on top of DeepSeek-R1-abliterated + ChromaDB + BM25 + a cross-encoder reranker) ran. Every layer of it was 1–2 generations behind 2026 state of the art, and the system had no agentic mode, no knowledge graph, and no native tool calling. v2 is an in-place upgrade across the entire stack — measured against an evaluation harness so every change has to move a number or get reverted.
+The v1 product (a Textual TUI over a local model + ChromaDB + BM25 + a cross-encoder reranker) ran. Every layer was one to two generations behind 2026 state of the art, with no agentic mode, no knowledge graph, and no native tool calling. v2 is an in-place upgrade across the whole stack, measured against an evaluation harness so every change has to move a number or get reverted.
 
 ## What it is
 
-A retrieval-augmented generation stack over a curated corpus of public security material (HackTricks, PayloadsAllTheThings, the OWASP Cheat Sheet Series, and MITRE ATT&CK / CTI), with hybrid dense+sparse retrieval, an LLM trained to emit structured tool calls as the reasoning brain, a Pydantic AI agent loop with sandboxed tool execution (nmap, curl, gobuster, sqlmap, nuclei, file, strings, checksec) for hands-on tasks, and a Kuzu knowledge graph layer on top of CVE/CWE/CAPEC/ATT&CK so the system can resolve entity relationships rather than re-deriving them every query.
+A retrieval-augmented generation stack over a curated corpus of public security references (HackTricks, PayloadsAllTheThings, the OWASP Cheat Sheet Series, and MITRE ATT&CK / CTI), with hybrid dense+sparse retrieval, a reasoning model that emits structured tool calls, a Pydantic AI agent loop with sandboxed execution of standard analysis tools (nmap, curl, gobuster, sqlmap, nuclei, file, strings, checksec) for hands-on work in your own authorized lab, and a Kuzu knowledge graph over CVE/CWE/CAPEC/ATT&CK so the system resolves entity relationships rather than re-deriving them each query.
 
-The user-facing interface is a Textual TUI today, with a custom desktop frontend planned once the v2 stack stabilizes.
+The interface is a Textual TUI today, with a custom desktop frontend planned once the v2 stack stabilizes.
+
+## Scope
+
+forged is built for work you are authorized to do: your own homelab, machines you own, CTF targets, contracted engagements, and studying public security material. It behaves like a well-aligned assistant. The reasons it runs locally are privacy, offline operation, and domain specialization, not the removal of safety behavior.
 
 ## Hardware target
 
-Intel Core Ultra 7 258V (Lunar Lake), Intel Arc 140V iGPU, 30 GB shared LPDDR5x RAM, no NVIDIA. The model, the embedding model, the reranker, the vector DB, and the knowledge graph all share the same memory pool the OS is using. The build is constrained by what an iGPU can run — most of the design decisions downstream of this fall out of that constraint.
+Intel Core Ultra 7 258V (Lunar Lake), Intel Arc 140V iGPU, 30 GB shared LPDDR5x RAM, no NVIDIA. The model, the embedding model, the reranker, the vector DB, and the knowledge graph all share the same memory pool the OS is using. The build is constrained by what an iGPU can run, and most design decisions downstream fall out of that constraint.
 
 ## Stack (v2 target)
 
@@ -37,13 +41,18 @@ Intel Core Ultra 7 258V (Lunar Lake), Intel Arc 140V iGPU, 30 GB shared LPDDR5x 
 | Sandbox | bubblewrap + seccomp + Landlock, absolute-path binary allowlist |
 | Frontend | Textual TUI now, custom desktop later (Tauri+SolidJS or Open WebUI fork — TBD) |
 
-The v1 stack still in this tree (DeepSeek-R1-abliterated, `nomic-embed-text`, the MiniLM reranker, the existing TUI) is the baseline the v2 upgrades are measured against — not the final product.
+The v1 stack still in this tree (the v1 local model, `nomic-embed-text`, the MiniLM reranker, the existing TUI) is the baseline the v2 upgrades are measured against, not the final product.
 
 As of Day 2, generation runs via `scripts/llama-server.sh` (llama.cpp Vulkan, Hermes-4-14B Q6_K); Ollama is retained only for embeddings.
 
-## Why not just use ChatGPT / Claude / a hosted RAG
+## Why local
 
-Authorized red-team and pentest work involves discussing offensive techniques, payloads, CVE exploitation primitives, and target reconnaissance against systems you own or are contracted to test. Hosted assistants either refuse on alignment grounds, leak query content to provider infrastructure, or both. A local stack avoids both problems: no data leaves the laptop, no third-party content policy gates the answer, and the same machine can run the assistant on an airgapped engagement. The tradeoff is that you give up frontier-model quality and accept whatever a 14B local model can do — which is why most of the v2 build is about extracting the maximum useful work from that constraint.
+Two concrete reasons, neither about bypassing a content policy:
+
+- **Privacy and offline operation.** No query content leaves the laptop, and the assistant runs on an airgapped engagement where a hosted tool cannot.
+- **Domain specialization on constrained hardware.** A small model grounded in a curated security corpus, with a graph layer and an eval harness, can be sharper on this narrow domain than a general chat tool, and it runs on an iGPU with no NVIDIA GPU.
+
+The tradeoff is that you give up frontier-model quality and accept whatever a 14B local model can do, which is why most of the v2 build is about extracting the maximum useful work from that constraint.
 
 ## Setup
 
