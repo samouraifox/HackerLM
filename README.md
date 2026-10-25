@@ -1,7 +1,5 @@
 # forged
 
-![forged TUI on the landing screen](docs/hacker_lm-landing.png)
-
 A local, private, retrieval-grounded security assistant. Runs entirely offline on a thin-and-light Intel laptop, for authorized lab work, CTF practice, and studying public security knowledge. v2 — currently rebuilding.
 
 ## Status
