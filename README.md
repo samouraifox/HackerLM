@@ -1,4 +1,4 @@
-# forged
+# HackerLM
 
 A local, private, retrieval-grounded security assistant. Runs entirely offline on a thin-and-light Intel laptop, for authorized lab work, CTF practice, and studying public security knowledge. v2 — currently rebuilding.
 
@@ -16,7 +16,7 @@ The interface is a Textual TUI today, with a custom desktop frontend planned onc
 
 ## Scope
 
-forged is built for work you are authorized to do: your own homelab, machines you own, CTF targets, contracted engagements, and studying public security material. It behaves like a well-aligned assistant. The reasons it runs locally are privacy, offline operation, and domain specialization, not the removal of safety behavior.
+HackerLM (formerly "forged") is built for work you are authorized to do: your own homelab, machines you own, CTF targets, contracted engagements, and studying public security material. It behaves like a well-aligned assistant. The reasons it runs locally are privacy, offline operation, and domain specialization, not the removal of safety behavior.
 
 ## Hardware target
 
